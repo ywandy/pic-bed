@@ -13,7 +13,12 @@ func init() {
 		Use:   "save [storage type]",
 		Short: "save to a storage backend",
 	}
-	rootCmd.AddCommand(cmdSave)
+	cmdBase64 := &cobra.Command{
+		Use:   "link [storage type]",
+		Short: "get config link",
+	}
+	rootCmd.AddCommand(cmdSave, cmdBase64)
 	cmdSave.AddCommand(s3.CmdInit())
+	cmdBase64.AddCommand(s3.CmdBase64Init())
 	rootCmd.Execute()
 }

@@ -17,22 +17,14 @@ import (
 
 var minioCli *minio.Client
 
-type minioConfig struct {
-	Sk     string
-	Ak     string
-	Host   string
-	Bucket string
-	Ssl    bool
-}
-
 var result = "Upload Success:\n"
 
-func Start(cfg minioConfig, inpArgs []string) {
+func Start(cfg MinioConfig, inpArgs []string) {
 
 	var err error
 	minioCli, err = minio.New(cfg.Host, &minio.Options{
-		Creds:  credentials.NewStaticV4(cfg.Ak, cfg.Sk, ""),
-		Secure: cfg.Ssl,
+		Creds:  credentials.NewStaticV4(cfg.AK, cfg.SK, ""),
+		Secure: cfg.SSL,
 	})
 	if err != nil {
 		result += err.Error() + "\n"
@@ -87,7 +79,7 @@ func getContentType(ct string) string {
 	}
 }
 
-func Uploader(cfg minioConfig, inpArgs []string) {
+func Uploader(cfg MinioConfig, inpArgs []string) {
 	for _, img := range inpArgs {
 		u, err := url.Parse(img)
 		timestamp := time.Now().UnixNano()
