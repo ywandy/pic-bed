@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"pic-bed/lib/s3"
+	"pic-bed/lib/plugin/s3Storage"
+	"pic-bed/lib/storage"
 )
-
-var ConfigPath = "./config.yaml"
 
 func init() {
 	var rootCmd = &cobra.Command{Use: "picbed"}
@@ -13,12 +12,8 @@ func init() {
 		Use:   "save [storage type]",
 		Short: "save to a storage backend",
 	}
-	cmdBase64 := &cobra.Command{
-		Use:   "link [storage type]",
-		Short: "get config link",
-	}
-	rootCmd.AddCommand(cmdSave, cmdBase64)
-	cmdSave.AddCommand(s3.CmdInit())
-	cmdBase64.AddCommand(s3.CmdBase64Init())
+	rootCmd.AddCommand(cmdSave)
+	s3StorageInstance := storage.StorageBackend(&s3Storage.S3Storage{})
+	cmdSave.AddCommand(s3StorageInstance.ExportCmd())
 	rootCmd.Execute()
 }
