@@ -117,7 +117,7 @@ func (s *S3Storage) startUpload(p []string) ([]string, error) {
 			if s.Config.SSL {
 				schema = "https"
 			}
-			fUrls = append(fUrls, schema+"://"+s.Config.Host+"/"+s.Config.Bucket+"/"+fName+"\n")
+			fUrls = append(fUrls, schema+"://"+s.Config.Host+"/"+s.Config.Bucket+"/"+fName)
 		}
 	}
 	return fUrls, nil
