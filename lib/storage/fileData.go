@@ -3,6 +3,7 @@ package storage
 import (
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"time"
 )
 
@@ -27,7 +28,8 @@ func ContentFromPath(uri string) (SaveBody, error) {
 		}, nil
 	} else {
 		//本地资源
-		b, err := ioutil.ReadFile(uri)
+		t := filepath.FromSlash(uri)
+		b, err := ioutil.ReadFile(t)
 		if err != nil {
 			return SaveBody{}, err
 		}

@@ -7,7 +7,6 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/cobra"
-	"os"
 	"pic-bed/lib/reporter"
 	"pic-bed/lib/storage"
 	"time"
@@ -33,7 +32,6 @@ type s3Setting struct {
 }
 
 var DefaultReporter reporter.TextReporter
-var DefaultWriteFile *os.File
 
 func (s *S3Storage) ConfigFlags(cmds ...*cobra.Command) {
 	cfg := &s.Config
@@ -67,7 +65,6 @@ func (s *S3Storage) ExportCmd() *cobra.Command {
 func (s *S3Storage) Start(inpArgs []string) {
 	var err error
 	DefaultReporter = reporter.TyporaReporter()
-	DefaultWriteFile = os.Stdout
 	cfg := s.Config
 	s.minioCli, err = minio.New(cfg.Host, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.AK, cfg.SK, ""),
@@ -77,7 +74,7 @@ func (s *S3Storage) Start(inpArgs []string) {
 		DefaultReporter(reporter.ReporterSchema{
 			FileUrl: nil,
 			Error:   err,
-		}).Print(DefaultWriteFile)
+		}).Print()
 		return
 	}
 	urlList, err := s.startUpload(inpArgs)
@@ -85,12 +82,12 @@ func (s *S3Storage) Start(inpArgs []string) {
 		DefaultReporter(reporter.ReporterSchema{
 			FileUrl: nil,
 			Error:   err,
-		}).Print(DefaultWriteFile)
+		}).Print()
 	} else {
 		DefaultReporter(reporter.ReporterSchema{
 			FileUrl: urlList,
 			Error:   nil,
-		}).Print(DefaultWriteFile)
+		}).Print()
 	}
 }
 

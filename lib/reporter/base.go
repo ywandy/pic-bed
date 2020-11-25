@@ -2,7 +2,7 @@ package reporter
 
 import (
 	"fmt"
-	"os"
+	"strings"
 )
 
 type TextReport string
@@ -20,14 +20,11 @@ func TyporaReporter() TextReporter {
 			res = res + r.Error.Error() + "\n"
 			return TextReport(res)
 		}
-		for _, item := range r.FileUrl {
-			res = res + item + "\n"
-			return TextReport(res)
-		}
+		res += strings.Join(r.FileUrl, "\n")
 		return TextReport(res)
 	}
 }
 
-func (a TextReport) Print(f *os.File) {
-	_, _ = fmt.Fprintln(f, a)
+func (a TextReport) Print() {
+	fmt.Print(a)
 }
