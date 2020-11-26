@@ -33,6 +33,10 @@ type s3Setting struct {
 
 var DefaultReporter reporter.TextReporter
 
+func (s *S3Storage) PrintLink() {}
+
+func (s *S3Storage) LoadLink() {}
+
 func (s *S3Storage) ConfigFlags(cmds ...*cobra.Command) {
 	cfg := &s.Config
 	setting := &s.setting
@@ -45,6 +49,7 @@ func (s *S3Storage) ConfigFlags(cmds ...*cobra.Command) {
 		c.Flags().BoolVarP(&cfg.SSL, "ssl", "", false, "s3 config ssl")
 		//设置
 		c.Flags().BoolVarP(&setting.Print, "print", "p", false, "print config to link")
+		c.Flags().StringVarP(&setting.QuickLink, "link", "l", "", "user link to config")
 	}
 }
 
@@ -52,10 +57,23 @@ func (s *S3Storage) ExportCmd() *cobra.Command {
 	saveTypeS3 := &cobra.Command{
 		Use:     "s3 [pic paths]",
 		Short:   "s3 storage backend",
-		Args:    cobra.MinimumNArgs(1),
+		Args:    cobra.MinimumNArgs(0),
 		Example: "xxx.jpg -sk val1 -ak val2 -host val3 -bucket val4 -ssl false",
 		Run: func(cmd *cobra.Command, args []string) {
-			s.Start(args)
+			if len(args) == 0 {
+				if s.setting.Print {
+					s := storage.MarshToMsgPackString(s.Config)
+					fmt.Println(s)
+				}
+				return
+			}
+			if s.setting.QuickLink != "" {
+				if err := storage.UnMarshMsgPackStringToStuct(s.setting.QuickLink, &s.Config); err != nil {
+					fmt.Println(err.Error())
+				} else {
+					s.Start(args)
+				}
+			}
 		},
 	}
 	s.ConfigFlags(saveTypeS3)
