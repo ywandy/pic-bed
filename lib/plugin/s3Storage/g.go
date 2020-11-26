@@ -70,10 +70,10 @@ func (s *S3Storage) ExportCmd() *cobra.Command {
 			if s.setting.QuickLink != "" {
 				if err := storage.UnMarshMsgPackStringToStuct(s.setting.QuickLink, &s.Config); err != nil {
 					fmt.Println(err.Error())
-				} else {
-					s.Start(args)
+					return
 				}
 			}
+			s.Start(args)
 		},
 	}
 	s.ConfigFlags(saveTypeS3)
